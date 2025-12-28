@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reverse World Clock - Nigerian Time</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f3460;
+            --highlight: #e94560;
+            --text: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--highlight);
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--highlight), #ff9a9e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .clock-section {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+
+        .reverse-clock {
+            font-size: 5.5rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+            letter-spacing: 5px;
+        }
+
+        .reverse-clock .milliseconds {
+            font-size: 2rem;
+            color: var(--highlight);
+        }
+
+        .normal-time {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .date-display {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #a9d1ff;
+        }
+
+        .timezone-selector {
+            margin-top: 20px;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--accent);
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        select option {
+            background: var(--primary);
+            color: white;
+        }
+
+        .timezone-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calendar-header {
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+            background: var(--accent);
+            border-radius: 5px;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day:hover {
+            background: rgba(233, 69, 96, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .calendar-day.today {
+            background: var(--highlight);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.4;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: var(--highlight);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #ff2e4a;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+        }
+
+        button.secondary {
+            background: var(--accent);
+        }
+
+        button.secondary:hover {
+            background: #1a3b6b;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+        }
+
+        .time-compare {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .time-box {
+            text-align: center;
+        }
+
+        .time-box h3 {
+            color: var(--highlight);
+            margin-bottom: 10px;
+        }
+
+        .time-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--highlight), #ff9a9e);
+            width: 50%;
+            transition: width 0.1s linear;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--highlight);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-clock"></i> Reverse World Clock</h1>
+            <p class="subtitle">When the world moves forward, we move forward faster</p>
+        </header>
+
+        <div class="main-content">
+            <div class="card clock-section">
+                <h2><i class="fas fa-backward"></i> Reverse Time</h2>
+                <div class="date-display" id="currentDate">Loading...</div>
+                <div class="reverse-clock" id="reverseClock">
+                    23:59:59.<span class="milliseconds">999</span>
+                </div>
+                <div class="normal-time" id="normalTime">
+                    Normal Time: 00:00:01
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="dayProgress"></div>
+                </div>
+                
+                <div class="time-compare">
+                    <div class="time-box">
+                        <h3>Normal Time</h3>
+                        <div class="time-value" id="normalTimeDisplay">00:00:00</div>
+                    </div>
+                    <div class="time-box">
+                        <h3>Reverse Time</h3>
+                        <div class="time-value" id="reverseTimeDisplay">23:59:59</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-globe-africa"></i> Timezone Settings</h2>
+                <div class="timezone-selector">
+                    <select id="timezoneSelect">
+                        <option value="Africa/Lagos">Nigeria (Africa/Lagos) 🇳🇬</option>
+                        <option value="UTC">UTC/GMT</option>
+                        <option value="America/New_York">New York, USA</option>
+                        <option value="Europe/London">London, UK</option>
+                        <option value="Asia/Tokyo">Tokyo, Japan</option>
+                        <option value="Australia/Sydney">Sydney, Australia</option>
+                        <option value="Asia/Dubai">Dubai, UAE</option>
+                        <option value="Europe/Paris">Paris, France</option>
+                        <option value="Asia/Kolkata">India</option>
+                    </select>
+                    
+                    <div class="timezone-info">
+                        <div>
+                            <strong id="timezoneName">Africa/Lagos</strong>
+                            <div id="timezoneOffset">UTC+01:00</div>
+                        </div>
+                        <div id="localTime">Local: 00:00:00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-calendar-alt"></i> Calendar</h2>
+                <div id="calendarMonth">December 2023</div>
+                <div class="calendar" id="calendar"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="fullscreenBtn">
+                <i class="fas fa-expand"></i> Fullscreen
+            </button>
+            <button id="notificationBtn">
+                <i class="fas fa-bell"></i> Enable Notifications
+            </button>
+            <button class="secondary" id="themeBtn">
+                <i class="fas fa-moon"></i> Dark Mode
+            </button>
+            <button class="secondary" id="saveBtn">
+                <i class="fas fa-download"></i> Save as App
+            </button>
+        </div>
+
+        <footer>
+            <p>Reverse World Clock • Always counting backwards • Nigerian Time Zone Supported</p>
+            <p id="lastUpdate">Last updated: Just now</p>
+        </footer>
+    </div>
+
+    <div class="notification" id="notification">
+        Time updated successfully!
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
