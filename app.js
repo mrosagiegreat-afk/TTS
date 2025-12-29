@@ -24,7 +24,44 @@ class ReverseWorldClock {
         // Initialize calendar
         this.generateCalendar();
         
+        // MOBILE: Add touch event handling
+        this.setupMobileTouchEvents();  // <-- NEW LINE ADDED
+        
         console.log('Reverse World Clock initialized with Nigerian timezone');
+    }
+    
+    // NEW METHOD ADDED FOR MOBILE
+    setupMobileTouchEvents() {
+        // Prevent zoom on double tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (event) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+        
+        // Better touch feedback for buttons
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.addEventListener('touchstart', () => {
+                button.style.transform = 'scale(0.95)';
+            });
+            
+            button.addEventListener('touchend', () => {
+                button.style.transform = '';
+            });
+        });
+        
+        // Make select dropdowns easier to tap on mobile
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            select.addEventListener('touchstart', (e) => {
+                // Increase touch target
+                e.currentTarget.style.padding = '15px';
+            });
+        });
     }
     
     startClock() {
